@@ -11,12 +11,50 @@
 body{
     font-family:Segoe UI;
     background:linear-gradient(135deg,#c7e9ff,#e8f7ff);
-    padding:20px;
+    margin:0;
 }
 
+/* LOGIN */
+#loginBox{
+    height:100vh;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+}
+
+.login-card{
+    background:white;
+    padding:30px;
+    border-radius:15px;
+    box-shadow:0 5px 20px rgba(0,0,0,.2);
+    width:300px;
+}
+
+input{
+    width:100%;
+    padding:10px;
+    margin-top:10px;
+    border-radius:10px;
+    border:1px solid #ccc;
+}
+
+button{
+    width:100%;
+    padding:10px;
+    margin-top:15px;
+    border:none;
+    border-radius:10px;
+    background:#1fa2ff;
+    color:white;
+    cursor:pointer;
+}
+
+/* APP */
 .container{
     max-width:1200px;
     margin:auto;
+    padding:20px;
+    display:none;
 }
 
 h1{
@@ -29,27 +67,7 @@ h1{
     padding:20px;
     border-radius:15px;
     margin-bottom:20px;
-    box-shadow:0 5px 15px rgba(0,0,0,.1);
 }
-
-input,textarea,select{
-    width:100%;
-    padding:10px;
-    margin:8px 0;
-    border-radius:10px;
-    border:1px solid #ccc;
-}
-
-button{
-    padding:10px 15px;
-    border:none;
-    border-radius:10px;
-    cursor:pointer;
-    margin-top:10px;
-}
-
-.add{background:#1fa2ff;color:white;}
-.del{background:#ff5b5b;color:white;}
 
 table{
     width:100%;
@@ -59,10 +77,12 @@ table{
 th,td{
     border:1px solid #ddd;
     padding:8px;
-    text-align:left;
 }
 
-th{background:#1fa2ff;color:white;}
+th{
+    background:#1fa2ff;
+    color:white;
+}
 
 a{
     color:#0077cc;
@@ -73,17 +93,31 @@ a{
 
 <body>
 
-<div class="container">
+<!-- LOGIN -->
+<div id="loginBox">
+<div class="login-card">
+<h3>🔐 Вход в ЦОО тикетов</h3>
+<input id="username" placeholder="Введите имя">
+<button onclick="login()">Войти</button>
+</div>
+</div>
 
-<h1>📋 ЦОО тикетов (ONLINE)</h1>
+<!-- APP -->
+<div class="container" id="app">
+
+<h1>📋 ЦОО тикетов</h1>
 
 <div class="card">
+
+<p>👤 Пользователь: <b id="user"></b></p>
 
 <input id="date" type="date">
 <input id="ticket" placeholder="Номер тикета">
 <input id="idnumber" placeholder="ID номер">
+
 <textarea id="violation" placeholder="Нарушение"></textarea>
 <textarea id="violationComment" placeholder="Комментарий"></textarea>
+
 <input id="violationTime" type="time">
 <input id="specialist" placeholder="ФИО специалиста">
 
@@ -92,13 +126,13 @@ a{
 <option>Выполнен</option>
 </select>
 
-<button class="add" onclick="addTicket()">Добавить</button>
+<button onclick="addTicket()">Добавить</button>
 
 </div>
 
 <div class="card">
 
-<input id="search" onkeyup="render()" placeholder="Поиск...">
+<input id="search" onkeyup="render()" placeholder="Поиск">
 
 <table>
 <thead>
@@ -110,6 +144,7 @@ a{
 <th>Комментарий</th>
 <th>Время</th>
 <th>Специалист</th>
+<th>Кто добавил</th>
 <th>Статус</th>
 <th>Удалить</th>
 </tr>
@@ -124,21 +159,40 @@ a{
 
 <script>
 
-// 🔥 Firebase config (ВСТАВЬ СВОИ ДАННЫЕ СЮДА)
 const firebaseConfig = {
   apiKey: "PASTE_HERE",
   authDomain: "PASTE_HERE",
   databaseURL: "https://coo-tickets-default-rtdb.asia-southeast1.firebasedatabase.app/",
-  projectId: "coo-tickets",
+  projectId: "coo-tickets"
 };
 
 firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
 const ref = db.ref("tickets");
 
+let currentUser = "";
+
+function login(){
+    currentUser = document.getElementById("username").value;
+
+    if(!currentUser){
+        alert("Введите имя");
+        return;
+    }
+
+    localStorage.setItem("user", currentUser);
+
+    document.getElementById("loginBox").style.display="none";
+    document.getElementById("app").style.display="block";
+
+    document.getElementById("user").innerText = currentUser;
+
+    render();
+}
+
 function addTicket(){
 
-let data = {
+ref.push({
 date: document.getElementById("date").value,
 ticket: document.getElementById("ticket").value,
 idnumber: document.getElementById("idnumber").value,
@@ -146,10 +200,9 @@ violation: document.getElementById("violation").value,
 violationComment: document.getElementById("violationComment").value,
 violationTime: document.getElementById("violationTime").value,
 specialist: document.getElementById("specialist").value,
-status: document.getElementById("status").value
-};
-
-ref.push(data);
+status: document.getElementById("status").value,
+createdBy: currentUser
+});
 
 }
 
@@ -159,34 +212,39 @@ ref.child(id).remove();
 
 function render(){
 
-ref.on("value", snapshot=>{
-let data = snapshot.val();
+ref.on("value", snap=>{
+let data = snap.val();
 let html = "";
 
 for(let id in data){
 
 let t = data[id];
 
-if(JSON.stringify(t).toLowerCase().includes(
-document.getElementById("search").value.toLowerCase()
-)){
+if(JSON.stringify(t).toLowerCase()
+.includes(document.getElementById("search").value.toLowerCase())){
 
 html += `
 <tr>
 <td>${t.date}</td>
+
 <td>
 <a target="_blank"
 href="https://qbox.telecom.kz/apps/#/support/analytics/calls/text/history?call_id=${t.idnumber}">
 ${t.ticket}
 </a>
 </td>
+
 <td>${t.idnumber}</td>
 <td>${t.violation}</td>
 <td>${t.violationComment}</td>
 <td>${t.violationTime}</td>
 <td>${t.specialist}</td>
+<td>${t.createdBy}</td>
 <td>${t.status}</td>
-<td><button class="del" onclick="deleteTicket('${id}')">X</button></td>
+
+<td>
+<button onclick="deleteTicket('${id}')">X</button>
+</td>
 </tr>`;
 }
 }
@@ -195,8 +253,6 @@ document.getElementById("list").innerHTML = html;
 });
 
 }
-
-render();
 
 </script>
 
