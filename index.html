@@ -6,118 +6,45 @@
 
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
 
 <style>
-body{
-    font-family:Segoe UI;
-    background:linear-gradient(135deg,#c7e9ff,#e8f7ff);
-    margin:0;
-}
-
-/* LOGIN */
-#loginBox{
-    height:100vh;
-    display:flex;
-    justify-content:center;
-    align-items:center;
-}
-
-.login-card{
-    background:white;
-    padding:30px;
-    border-radius:15px;
-    box-shadow:0 5px 20px rgba(0,0,0,.2);
-    width:300px;
-}
-
-input{
-    width:100%;
-    padding:10px;
-    margin-top:10px;
-    border-radius:10px;
-    border:1px solid #ccc;
-}
-
-button{
-    width:100%;
-    padding:10px;
-    margin-top:15px;
-    border:none;
-    border-radius:10px;
-    background:#1fa2ff;
-    color:white;
-    cursor:pointer;
-}
-
-/* APP */
-.container{
-    max-width:1200px;
-    margin:auto;
-    padding:20px;
-    display:none;
-}
-
-h1{
-    text-align:center;
-    color:#0b4f7a;
-}
-
-.card{
-    background:white;
-    padding:20px;
-    border-radius:15px;
-    margin-bottom:20px;
-}
-
-table{
-    width:100%;
-    border-collapse:collapse;
-}
-
-th,td{
-    border:1px solid #ddd;
-    padding:8px;
-}
-
-th{
-    background:#1fa2ff;
-    color:white;
-}
-
-a{
-    color:#0077cc;
-    font-weight:bold;
-}
+body{font-family:Segoe UI;background:linear-gradient(135deg,#c7e9ff,#e8f7ff);margin:0}
+#loginBox{height:100vh;display:flex;justify-content:center;align-items:center}
+.login-card{background:#fff;padding:30px;border-radius:15px;box-shadow:0 5px 20px rgba(0,0,0,.2);width:320px}
+input,textarea,select{width:100%;padding:10px;margin-top:10px;border-radius:10px;border:1px solid #ccc;box-sizing:border-box}
+button{width:100%;padding:10px;margin-top:10px;border:none;border-radius:10px;background:#1fa2ff;color:#fff;cursor:pointer}
+.container{max-width:1200px;margin:auto;padding:20px;display:none}
+.card{background:#fff;padding:20px;border-radius:15px;margin-bottom:20px}
+table{width:100%;border-collapse:collapse}
+th,td{border:1px solid #ddd;padding:8px}
+th{background:#1fa2ff;color:#fff}
 </style>
 </head>
-
 <body>
 
-<!-- LOGIN -->
 <div id="loginBox">
 <div class="login-card">
-<h3>🔐 Вход в ЦОО тикетов</h3>
+<h3>🔐 Вход</h3>
 <input id="username" placeholder="Введите имя">
 <button onclick="login()">Войти</button>
 </div>
 </div>
 
-<!-- APP -->
 <div class="container" id="app">
-
 <h1>📋 ЦОО тикетов</h1>
 
 <div class="card">
-
 <p>👤 Пользователь: <b id="user"></b></p>
+
+<input id="callid" placeholder="Call ID (например 3043995)">
+<button onclick="loadCall()">🔍 Получить из Qbox</button>
 
 <input id="date" type="date">
 <input id="ticket" placeholder="Номер тикета">
 <input id="idnumber" placeholder="ID номер">
-
 <textarea id="violation" placeholder="Нарушение"></textarea>
-<textarea id="violationComment" placeholder="Комментарий"></textarea>
-
+<textarea id="violationComment" placeholder="Комментарий / Диалог"></textarea>
 <input id="violationTime" type="time">
 <input id="specialist" placeholder="ФИО специалиста">
 
@@ -127,134 +54,126 @@ a{
 </select>
 
 <button onclick="addTicket()">Добавить</button>
-
+<button style="background:#28a745" onclick="exportExcel()">📥 Выгрузить в Excel</button>
 </div>
 
 <div class="card">
-
 <input id="search" onkeyup="render()" placeholder="Поиск">
-
 <table>
-<thead>
-<tr>
-<th>Дата</th>
-<th>Тикет</th>
-<th>ID</th>
-<th>Нарушение</th>
-<th>Комментарий</th>
-<th>Время</th>
-<th>Специалист</th>
-<th>Кто добавил</th>
-<th>Статус</th>
-<th>Удалить</th>
-</tr>
-</thead>
-
+<thead><tr>
+<th>Дата</th><th>Тикет</th><th>ID</th><th>Нарушение</th><th>Комментарий</th><th>Время</th><th>Специалист</th><th>Добавил</th><th>Статус</th><th>Удалить</th>
+</tr></thead>
 <tbody id="list"></tbody>
 </table>
-
 </div>
-
 </div>
 
 <script>
-
-const firebaseConfig = {
-  apiKey: "PASTE_HERE",
-  authDomain: "PASTE_HERE",
-  databaseURL: "https://coo-tickets-default-rtdb.asia-southeast1.firebasedatabase.app/",
-  projectId: "coo-tickets"
+const firebaseConfig={
+ apiKey:"PASTE_HERE",
+ authDomain:"PASTE_HERE",
+ databaseURL:"https://coo-tickets-default-rtdb.asia-southeast1.firebasedatabase.app/",
+ projectId:"coo-tickets"
 };
-
 firebase.initializeApp(firebaseConfig);
-const db = firebase.database();
-const ref = db.ref("tickets");
-
-let currentUser = "";
+const ref=firebase.database().ref("tickets");
+let currentUser="";
 
 function login(){
-    currentUser = document.getElementById("username").value;
+ currentUser=document.getElementById("username").value;
+ if(!currentUser){alert("Введите имя");return;}
+ document.getElementById("loginBox").style.display="none";
+ document.getElementById("app").style.display="block";
+ document.getElementById("user").innerText=currentUser;
+ render();
+}
 
-    if(!currentUser){
-        alert("Введите имя");
-        return;
+async function loadCall(){
+ const id=document.getElementById("callid").value.trim();
+ if(!id){alert("Введите Call ID");return;}
+ try{
+  const res=await fetch("https://qbox.telecom.kz/api/analytics/history/"+id,{credentials:"include"});
+  if(!res.ok) throw new Error("HTTP "+res.status);
+  const json=await res.json();
+  const h=json.history;
+  document.getElementById("ticket").value=id;
+  document.getElementById("idnumber").value=h.call_id||"";
+  document.getElementById("specialist").value=((h.operator_first_name||"")+" "+(h.operator_last_name||"")).trim();
+  document.getElementById("date").value=new Date(h.datetime*1000).toISOString().split("T")[0];
+  let dialog="";
+  (h.history||[]).forEach(x=>{
+    if(x.text){
+      dialog+=(x.from==="operator"?"Оператор":"Абонент")+": "+x.text+"\n\n";
     }
-
-    localStorage.setItem("user", currentUser);
-
-    document.getElementById("loginBox").style.display="none";
-    document.getElementById("app").style.display="block";
-
-    document.getElementById("user").innerText = currentUser;
-
-    render();
+  });
+  document.getElementById("violationComment").value=dialog;
+ }catch(e){
+  alert("Не удалось получить данные. Если сайт размещен на GitHub Pages, запрос может блокироваться CORS. Ошибка: "+e.message);
+ }
 }
 
 function addTicket(){
-
-ref.push({
-date: document.getElementById("date").value,
-ticket: document.getElementById("ticket").value,
-idnumber: document.getElementById("idnumber").value,
-violation: document.getElementById("violation").value,
-violationComment: document.getElementById("violationComment").value,
-violationTime: document.getElementById("violationTime").value,
-specialist: document.getElementById("specialist").value,
-status: document.getElementById("status").value,
-createdBy: currentUser
-});
-
+ ref.push({
+  date:date.value,ticket:ticket.value,idnumber:idnumber.value,
+  violation:violation.value,violationComment:violationComment.value,
+  violationTime:violationTime.value,specialist:specialist.value,
+  status:status.value,createdBy:currentUser
+ });
 }
 
-function deleteTicket(id){
-ref.child(id).remove();
-}
+function deleteTicket(id){ref.child(id).remove();}
 
 function render(){
-
-ref.on("value", snap=>{
-let data = snap.val();
-let html = "";
-
-for(let id in data){
-
-let t = data[id];
-
-if(JSON.stringify(t).toLowerCase()
-.includes(document.getElementById("search").value.toLowerCase())){
-
-html += `
-<tr>
-<td>${t.date}</td>
-
-<td>
-<a target="_blank"
-href="https://qbox.telecom.kz/apps/#/support/analytics/calls/text/history?call_id=${t.idnumber}">
-${t.ticket}
-</a>
-</td>
-
-<td>${t.idnumber}</td>
-<td>${t.violation}</td>
-<td>${t.violationComment}</td>
-<td>${t.violationTime}</td>
-<td>${t.specialist}</td>
-<td>${t.createdBy}</td>
-<td>${t.status}</td>
-
-<td>
-<button onclick="deleteTicket('${id}')">X</button>
-</td>
+ ref.on("value",snap=>{
+  const data=snap.val()||{};
+  let html="";
+  const q=search.value.toLowerCase();
+  for(const id in data){
+    const t=data[id];
+    if(JSON.stringify(t).toLowerCase().includes(q)){
+      html+=`<tr>
+<td>${t.date||""}</td>
+<td><a target="_blank" href="https://qbox.telecom.kz/apps/#/support/analytics/calls/text/history?call_id=${t.idnumber||""}">${t.ticket||""}</a></td>
+<td>${t.idnumber||""}</td>
+<td>${t.violation||""}</td>
+<td>${t.violationComment||""}</td>
+<td>${t.violationTime||""}</td>
+<td>${t.specialist||""}</td>
+<td>${t.createdBy||""}</td>
+<td>${t.status||""}</td>
+<td><button onclick="deleteTicket('${id}')">X</button></td>
 </tr>`;
-}
-}
-
-document.getElementById("list").innerHTML = html;
-});
-
+    }
+  }
+  list.innerHTML=html;
+ });
 }
 
+function exportExcel(){
+ ref.once("value",snap=>{
+   const data=snap.val()||{};
+   const rows=[];
+   for(const id in data){
+     const t=data[id];
+     rows.push({
+      "Дата":t.date||"",
+      "Тикет":t.ticket||"",
+      "ID":t.idnumber||"",
+      "Нарушение":t.violation||"",
+      "Комментарий":t.violationComment||"",
+      "Время":t.violationTime||"",
+      "Специалист":t.specialist||"",
+      "Добавил":t.createdBy||"",
+      "Статус":t.status||""
+     });
+   }
+   const ws=XLSX.utils.json_to_sheet(rows);
+   ws["!cols"]=[{wch:15},{wch:18},{wch:20},{wch:35},{wch:60},{wch:12},{wch:25},{wch:20},{wch:15}];
+   const wb=XLSX.utils.book_new();
+   XLSX.utils.book_append_sheet(wb,ws,"Тикеты");
+   XLSX.writeFile(wb,"tickets.xlsx");
+ });
+}
 </script>
-
 </body>
 </html>
