@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<title>ЦОО тикетов</title>
+
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+
+<style>
+body{
+    font-family:Segoe UI;
+    background:linear-gradient(135deg,#c7e9ff,#e8f7ff);
+    padding:20px;
+}
+
+.container{
+    max-width:1200px;
+    margin:auto;
+}
+
+h1{
+    text-align:center;
+    color:#0b4f7a;
+}
+
+.card{
+    background:white;
+    padding:20px;
+    border-radius:15px;
+    margin-bottom:20px;
+    box-shadow:0 5px 15px rgba(0,0,0,.1);
+}
+
+input,textarea,select{
+    width:100%;
+    padding:10px;
+    margin:8px 0;
+    border-radius:10px;
+    border:1px solid #ccc;
+}
+
+button{
+    padding:10px 15px;
+    border:none;
+    border-radius:10px;
+    cursor:pointer;
+    margin-top:10px;
+}
+
+.add{background:#1fa2ff;color:white;}
+.del{background:#ff5b5b;color:white;}
+
+table{
+    width:100%;
+    border-collapse:collapse;
+}
+
+th,td{
+    border:1px solid #ddd;
+    padding:8px;
+    text-align:left;
+}
+
+th{background:#1fa2ff;color:white;}
+
+a{
+    color:#0077cc;
+    font-weight:bold;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<h1>📋 ЦОО тикетов (ONLINE)</h1>
+
+<div class="card">
+
+<input id="date" type="date">
+<input id="ticket" placeholder="Номер тикета">
+<input id="idnumber" placeholder="ID номер">
+<textarea id="violation" placeholder="Нарушение"></textarea>
+<textarea id="violationComment" placeholder="Комментарий"></textarea>
+<input id="violationTime" type="time">
+<input id="specialist" placeholder="ФИО специалиста">
+
+<select id="status">
+<option>В работе</option>
+<option>Выполнен</option>
+</select>
+
+<button class="add" onclick="addTicket()">Добавить</button>
+
+</div>
+
+<div class="card">
+
+<input id="search" onkeyup="render()" placeholder="Поиск...">
+
+<table>
+<thead>
+<tr>
+<th>Дата</th>
+<th>Тикет</th>
+<th>ID</th>
+<th>Нарушение</th>
+<th>Комментарий</th>
+<th>Время</th>
+<th>Специалист</th>
+<th>Статус</th>
+<th>Удалить</th>
+</tr>
+</thead>
+
+<tbody id="list"></tbody>
+</table>
+
+</div>
+
+</div>
+
+<script>
+
+// 🔥 Firebase config (ВСТАВЬ СВОИ ДАННЫЕ СЮДА)
+const firebaseConfig = {
+  apiKey: "PASTE_HERE",
+  authDomain: "PASTE_HERE",
+  databaseURL: "https://coo-tickets-default-rtdb.asia-southeast1.firebasedatabase.app/",
+  projectId: "coo-tickets",
+};
+
+firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
+const ref = db.ref("tickets");
+
+function addTicket(){
+
+let data = {
+date: document.getElementById("date").value,
+ticket: document.getElementById("ticket").value,
+idnumber: document.getElementById("idnumber").value,
+violation: document.getElementById("violation").value,
+violationComment: document.getElementById("violationComment").value,
+violationTime: document.getElementById("violationTime").value,
+specialist: document.getElementById("specialist").value,
+status: document.getElementById("status").value
+};
+
+ref.push(data);
+
+}
+
+function deleteTicket(id){
+ref.child(id).remove();
+}
+
+function render(){
+
+ref.on("value", snapshot=>{
+let data = snapshot.val();
+let html = "";
+
+for(let id in data){
+
+let t = data[id];
+
+if(JSON.stringify(t).toLowerCase().includes(
+document.getElementById("search").value.toLowerCase()
+)){
+
+html += `
+<tr>
+<td>${t.date}</td>
+<td>
+<a target="_blank"
+href="https://qbox.telecom.kz/apps/#/support/analytics/calls/text/history?call_id=${t.idnumber}">
+${t.ticket}
+</a>
+</td>
+<td>${t.idnumber}</td>
+<td>${t.violation}</td>
+<td>${t.violationComment}</td>
+<td>${t.violationTime}</td>
+<td>${t.specialist}</td>
+<td>${t.status}</td>
+<td><button class="del" onclick="deleteTicket('${id}')">X</button></td>
+</tr>`;
+}
+}
+
+document.getElementById("list").innerHTML = html;
+});
+
+}
+
+render();
+
+</script>
+
+</body>
+</html>
