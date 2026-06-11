@@ -10,31 +10,23 @@
 
 <style>
 body{font-family:Arial;background:#eef7ff;margin:0}
-
-.container{max-width:1200px;margin:auto;padding:20px;display:none}
-
-.card{background:#fff;padding:20px;border-radius:10px;box-shadow:0 2px 10px rgba(0,0,0,.1);margin-bottom:20px}
-
-input,textarea,select,button{
-width:100%;padding:10px;margin-top:10px;box-sizing:border-box
-}
-
-button{background:#1fa2ff;color:#fff;border:none;border-radius:6px;cursor:pointer}
-
+.container{max-width:1000px;margin:auto;padding:20px}
+.card{background:#fff;padding:15px;border-radius:10px;margin-bottom:15px}
+input,textarea,select,button{width:100%;padding:10px;margin-top:8px}
+button{background:#1fa2ff;color:#fff;border:none;cursor:pointer}
 table{width:100%;border-collapse:collapse}
-th,td{border:1px solid #ddd;padding:8px}
+td,th{border:1px solid #ddd;padding:8px}
 th{background:#1fa2ff;color:#fff}
 </style>
 </head>
 
 <body>
 
-<div class="container" id="app">
+<div class="container">
 
 <h2>📋 ЦОО тикетов</h2>
 
 <div class="card">
-
 <input id="date" type="date">
 <input id="ticket" placeholder="Тикет">
 <input id="idnumber" placeholder="ID">
@@ -57,9 +49,15 @@ th{background:#1fa2ff;color:#fff}
 <table>
 <thead>
 <tr>
-<th>Дата</th><th>Тикет</th><th>ID</th><th>Нарушение</th>
-<th>Комментарий</th><th>Время</th><th>Специалист</th>
-<th>Статус</th><th>Удалить</th>
+<th>Дата</th>
+<th>Тикет</th>
+<th>ID</th>
+<th>Нарушение</th>
+<th>Комментарий</th>
+<th>Время</th>
+<th>Специалист</th>
+<th>Статус</th>
+<th>Удалить</th>
 </tr>
 </thead>
 <tbody id="list"></tbody>
@@ -69,14 +67,12 @@ th{background:#1fa2ff;color:#fff}
 </div>
 
 <script>
+// 🔴 ВСТАВЬ СВОЙ FIREBASE CONFIG СЮДА
 const firebaseConfig = {
   apiKey: "YOUR_API_KEY",
   authDomain: "YOUR_PROJECT.firebaseapp.com",
   databaseURL: "https://YOUR_PROJECT.firebaseio.com",
-  projectId: "YOUR_PROJECT_ID",
-  storageBucket: "YOUR_PROJECT.appspot.com",
-  messagingSenderId: "XXXX",
-  appId: "XXXX"
+  projectId: "YOUR_PROJECT",
 };
 
 firebase.initializeApp(firebaseConfig);
@@ -84,40 +80,36 @@ const ref = firebase.database().ref("tickets");
 
 let cache = {};
 
-// ---------- INIT ----------
-document.addEventListener("DOMContentLoaded", () => {
-  document.getElementById("app").style.display = "block";
-
-  ref.on("value", snap => {
-    cache = snap.val() || {};
-    render();
-  });
+// LOAD DATA
+ref.on("value", snap => {
+  cache = snap.val() || {};
+  render();
 });
 
-// ---------- ADD ----------
+// ADD
 function addTicket(){
+  const ticket = document.getElementById("ticket").value;
 
-  const ticketEl = document.getElementById("ticket");
-  if(!ticketEl || !ticketEl.value.trim()){
+  if(!ticket){
     alert("Введите тикет");
     return;
   }
 
   ref.push({
-    date: document.getElementById("date")?.value || "",
-    ticket: ticketEl.value.trim(),
-    idnumber: document.getElementById("idnumber")?.value || "",
-    violation: document.getElementById("violation")?.value || "",
-    violationComment: document.getElementById("violationComment")?.value || "",
-    violationTime: document.getElementById("violationTime")?.value || "",
-    specialist: document.getElementById("specialist")?.value || "",
-    status: document.getElementById("status")?.value || "В работе",
+    date: document.getElementById("date").value,
+    ticket: ticket,
+    idnumber: document.getElementById("idnumber").value,
+    violation: document.getElementById("violation").value,
+    violationComment: document.getElementById("violationComment").value,
+    violationTime: document.getElementById("violationTime").value,
+    specialist: document.getElementById("specialist").value,
+    status: document.getElementById("status").value,
     createdAt: Date.now()
   });
 
-  alert("Тикет добавлен");
+  alert("Добавлено");
 
-  ticketEl.value = "";
+  document.getElementById("ticket").value = "";
   document.getElementById("idnumber").value = "";
   document.getElementById("violation").value = "";
   document.getElementById("violationComment").value = "";
@@ -125,42 +117,39 @@ function addTicket(){
   document.getElementById("specialist").value = "";
 }
 
-// ---------- DELETE ----------
+// DELETE
 function deleteTicket(id){
-  if(confirm("Удалить?")){
-    ref.child(id).remove();
-  }
+  ref.child(id).remove();
 }
 
-// ---------- RENDER ----------
+// RENDER
 function render(){
-
   const list = document.getElementById("list");
-  if(!list) return;
-
-  const q = (document.getElementById("search")?.value || "").toLowerCase();
-
-  const rows = Object.entries(cache)
-    .sort((a,b)=>(b[1].createdAt||0)-(a[1].createdAt||0));
+  const q = (document.getElementById("search").value || "").toLowerCase();
 
   let html = "";
 
-  for(const [id,t] of rows){
-    if(JSON.stringify(t).toLowerCase().includes(q)){
-      html += `
-      <tr>
-        <td>${t.date||""}</td>
-        <td>${t.ticket||""}</td>
-        <td>${t.idnumber||""}</td>
-        <td>${t.violation||""}</td>
-        <td>${t.violationComment||""}</td>
-        <td>${t.violationTime||""}</td>
-        <td>${t.specialist||""}</td>
-        <td>${t.status||""}</td>
-        <td><button onclick="deleteTicket('${id}')">X</button></td>
-      </tr>`;
-    }
-  }
+  Object.entries(cache)
+    .sort((a,b)=> (b[1].createdAt||0)-(a[1].createdAt||0))
+    .forEach(([id,t])=>{
+
+      if(JSON.stringify(t).toLowerCase().includes(q)){
+        html += `
+          <tr>
+            <td>${t.date||""}</td>
+            <td>${t.ticket||""}</td>
+            <td>${t.idnumber||""}</td>
+            <td>${t.violation||""}</td>
+            <td>${t.violationComment||""}</td>
+            <td>${t.violationTime||""}</td>
+            <td>${t.specialist||""}</td>
+            <td>${t.status||""}</td>
+            <td><button onclick="deleteTicket('${id}')">X</button></td>
+          </tr>
+        `;
+      }
+
+    });
 
   list.innerHTML = html;
 }
