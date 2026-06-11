@@ -89,10 +89,10 @@ let cache = {};
 function login(){
   const name = document.getElementById("username").value.trim();
   if(!name){
-    alert("Введите имя");
+    alert("Введите имя");{
     return;
   }
-
+}
   currentUser = name;
   localStorage.setItem("user", name);
 
@@ -119,16 +119,16 @@ window.onload = () => {
 function addTicket(){
 
   if(!currentUser){
-    alert("Сначала войдите");
+    alert("Сначала войдите");{
     return;
   }
-
+}
   const ticket = document.getElementById("ticket").value.trim();
   if(!ticket){
-    alert("Введите номер тикета");
+    alert("Введите номер тикета");{
     return;
   }
-
+}
   ref.push({
     date: document.getElementById("date").value || "",
     ticket: ticket,
