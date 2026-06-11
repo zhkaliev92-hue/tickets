@@ -86,20 +86,14 @@ const ref = firebase.database().ref("tickets");
 
 let currentUser = "";
 let cache = {};
-
+let currentUser = "Оператор ЦОО";
   ref.on("value", snap => {
     cache = snap.val() || {};
     render();
   });
-};
 
 // ---------- ADD ----------
 function addTicket(){
-
-  if(!currentUser){
-    alert("Сначала войдите");
-    return;
-  }
 
   const ticketEl = document.getElementById("ticket");
   if(!ticketEl || !ticketEl.value.trim()){
@@ -177,3 +171,11 @@ function render(){
 
 list.innerHTML = html;
 }
+window.onload = () => {
+  document.getElementById("app").style.display = "block";
+
+  ref.on("value", snap => {
+    cache = snap.val() || {};
+    render();
+  });
+};
