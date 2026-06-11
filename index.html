@@ -81,8 +81,6 @@ th{background:#1fa2ff;color:#fff}
 </div>
 
 <script>
-
-// 🔥 Firebase
 const firebaseConfig = {
   apiKey: "YOUR_API_KEY",
   authDomain: "YOUR_PROJECT.firebaseapp.com",
@@ -93,11 +91,10 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const ref = firebase.database().ref("tickets");
 
-// state
 let currentUser = "";
 let cache = {};
 
-// LOGIN
+// 🔐 LOGIN
 function login(){
   const name = document.getElementById("username").value.trim();
 
@@ -109,29 +106,38 @@ function login(){
   currentUser = name;
   localStorage.setItem("user", name);
 
-  document.getElementById("user").textContent = name;
-  document.getElementById("loginBox").style.display = "none";
-  document.getElementById("app").style.display = "block";
+  showApp(name);
 }
 
-// AUTO LOGIN
+// 🔓 SHOW APP SAFE
+function showApp(name){
+  const userEl = document.getElementById("user");
+  const loginBox = document.getElementById("loginBox");
+  const app = document.getElementById("app");
+
+  if(userEl) userEl.textContent = name;
+  if(loginBox) loginBox.style.display = "none";
+  if(app) app.style.display = "block";
+}
+
+// 🚀 INIT AFTER LOAD
 window.onload = () => {
+
   const u = localStorage.getItem("user");
 
   if(u){
     currentUser = u;
-    document.getElementById("user").textContent = u;
-    document.getElementById("loginBox").style.display = "none";
-    document.getElementById("app").style.display = "block";
+    showApp(u);
   }
 
+  // Firebase safe load
   ref.on("value", snap => {
     cache = snap.val() || {};
     render();
   });
 };
 
-// ADD
+// ➕ ADD
 function addTicket(){
 
   if(!currentUser){
@@ -139,29 +145,29 @@ function addTicket(){
     return;
   }
 
-  const ticket = document.getElementById("ticket").value.trim();
-
-  if(!ticket){
+  const ticketEl = document.getElementById("ticket");
+  if(!ticketEl || !ticketEl.value.trim()){
     alert("Введите тикет");
     return;
   }
 
   ref.push({
-    date: document.getElementById("date").value || "",
-    ticket,
-    idnumber: document.getElementById("idnumber").value || "",
-    violation: document.getElementById("violation").value || "",
-    violationComment: document.getElementById("violationComment").value || "",
-    violationTime: document.getElementById("violationTime").value || "",
-    specialist: document.getElementById("specialist").value || "",
-    status: document.getElementById("status").value || "В работе",
+    date: document.getElementById("date")?.value || "",
+    ticket: ticketEl.value.trim(),
+    idnumber: document.getElementById("idnumber")?.value || "",
+    violation: document.getElementById("violation")?.value || "",
+    violationComment: document.getElementById("violationComment")?.value || "",
+    violationTime: document.getElementById("violationTime")?.value || "",
+    specialist: document.getElementById("specialist")?.value || "",
+    status: document.getElementById("status")?.value || "В работе",
     createdBy: currentUser,
     createdAt: Date.now()
   });
 
   alert("Тикет добавлен");
 
-  document.getElementById("ticket").value = "";
+  // clear
+  ticketEl.value = "";
   document.getElementById("idnumber").value = "";
   document.getElementById("violation").value = "";
   document.getElementById("violationComment").value = "";
@@ -169,16 +175,20 @@ function addTicket(){
   document.getElementById("specialist").value = "";
 }
 
-// DELETE
+// ❌ DELETE
 function deleteTicket(id){
   if(confirm("Удалить?")){
     ref.child(id).remove();
   }
 }
 
-// RENDER
+// 📋 RENDER SAFE
 function render(){
-  const q = (document.getElementById("search").value || "").toLowerCase();
+
+  const list = document.getElementById("list");
+  if(!list) return;
+
+  const q = (document.getElementById("search")?.value || "").toLowerCase();
 
   const rows = Object.entries(cache)
     .sort((a,b)=> (b[1].createdAt||0)-(a[1].createdAt||0));
@@ -203,10 +213,6 @@ function render(){
     }
   }
 
-  document.getElementById("list").innerHTML = html;
+  list.innerHTML = html;
 }
-
 </script>
-
-</body>
-</html>
