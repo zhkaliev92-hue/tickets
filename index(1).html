@@ -108,39 +108,52 @@ window.onload=()=>{
 };
 
 function addTicket(){
- if(!currentUser){alert("Сначала войдите");return;}
- if(!document.getElementById("ticket").value.trim()){
-   alert("Введите номер тикета");
-   return;
- }
- ref.push({
-   date:date.value,
-   ticket:ticket.value,
-   idnumber:idnumber.value,
-   violation:violation.value,
-   violationComment:violationComment.value,
-   violationTime:violationTime.value,
-   specialist:specialist.value,
-   status:status.value,
-   createdBy:currentUser,
-   createdAt:Date.now()
- .then(() => {
 
-    alert("Тикет успешно добавлен");
+    if(!currentUser){
+        alert("Сначала войдите");
+        return;
+    }
 
-    document.getElementById("date").value = "";
-    document.getElementById("ticket").value = "";
-    document.getElementById("idnumber").value = "";
-    document.getElementById("violation").value = "";
-    document.getElementById("violationComment").value = "";
-    document.getElementById("violationTime").value = "";
-    document.getElementById("specialist").value = "";
-    document.getElementById("status").selectedIndex = 0;
+    if(!document.getElementById("ticket").value.trim()){
+        alert("Введите номер тикета");
+        return;
+    }
 
-})
-.catch(err => {
-    alert(err.message);
-});
+    ref.push({
+
+        date: document.getElementById("date").value,
+        ticket: document.getElementById("ticket").value,
+        idnumber: document.getElementById("idnumber").value,
+        violation: document.getElementById("violation").value,
+        violationComment: document.getElementById("violationComment").value,
+        violationTime: document.getElementById("violationTime").value,
+        specialist: document.getElementById("specialist").value,
+        status: document.getElementById("status").value,
+        createdBy: currentUser,
+        createdAt: Date.now()
+
+    })
+    .then(() => {
+
+        alert("Тикет успешно добавлен");
+
+        document.getElementById("date").value = "";
+        document.getElementById("ticket").value = "";
+        document.getElementById("idnumber").value = "";
+        document.getElementById("violation").value = "";
+        document.getElementById("violationComment").value = "";
+        document.getElementById("violationTime").value = "";
+        document.getElementById("specialist").value = "";
+        document.getElementById("status").selectedIndex = 0;
+
+    })
+    .catch(err => {
+
+        alert(err.message);
+        console.log(err);
+
+    });
+
 }
 
 function deleteTicket(id){
