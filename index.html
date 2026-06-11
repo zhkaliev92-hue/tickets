@@ -89,21 +89,8 @@ let currentUser = "";
 let cache = {};
 
 // ---------- LOGIN ----------
-function login(){
-  alert("Кнопка работает");
-
+window.login = function(){
   const name = document.getElementById("username").value.trim();
-
-  if(!name){
-    alert("Введите имя");
-    return;
-  }
-
-  currentUser = name;
-  localStorage.setItem("user", name);
-
-  safeShowApp(name);
-}
 
   if(!name){
     alert("Введите имя");
