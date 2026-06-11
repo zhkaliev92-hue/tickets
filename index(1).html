@@ -9,12 +9,12 @@
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
 <style>
-body{font-family:Segoe UI,Arial;background:#eef7ff;margin:0}
+body{font-family:Arial;background:#eef7ff;margin:0}
 .container{max-width:1200px;margin:auto;padding:20px;display:none}
 #loginBox{height:100vh;display:flex;justify-content:center;align-items:center}
-.card{background:#fff;padding:20px;border-radius:12px;box-shadow:0 2px 10px rgba(0,0,0,.15);margin-bottom:20px}
-input,textarea,select,button{width:100%;box-sizing:border-box;padding:10px;margin-top:10px}
-button{cursor:pointer;background:#1fa2ff;color:#fff;border:none;border-radius:8px}
+.card{background:#fff;padding:20px;border-radius:10px;box-shadow:0 2px 10px rgba(0,0,0,.1);margin-bottom:20px}
+input,textarea,select,button{width:100%;padding:10px;margin-top:10px;box-sizing:border-box}
+button{background:#1fa2ff;color:#fff;border:none;border-radius:6px;cursor:pointer}
 table{width:100%;border-collapse:collapse}
 th,td{border:1px solid #ddd;padding:8px}
 th{background:#1fa2ff;color:#fff}
@@ -25,9 +25,9 @@ th{background:#1fa2ff;color:#fff}
 
 <!-- LOGIN -->
 <div id="loginBox">
-  <div class="card" style="max-width:320px;width:100%">
-    <h3>🔐 Вход</h3>
-    <input id="username" placeholder="Введите имя">
+  <div class="card" style="width:300px">
+    <h3>Вход</h3>
+    <input id="username" placeholder="Имя">
     <button onclick="login()">Войти</button>
   </div>
 </div>
@@ -35,18 +35,18 @@ th{background:#1fa2ff;color:#fff}
 <!-- APP -->
 <div class="container" id="app">
 
-<h2>📋 ЦОО тикетов</h2>
+<h2>ЦОО тикетов</h2>
 
 <div class="card">
-<p>👤 Пользователь: <b id="user"></b></p>
+<p>Пользователь: <b id="user"></b></p>
 
 <input id="date" type="date">
-<input id="ticket" placeholder="Номер тикета">
-<input id="idnumber" placeholder="ID номер">
+<input id="ticket" placeholder="Тикет">
+<input id="idnumber" placeholder="ID">
 <textarea id="violation" placeholder="Нарушение"></textarea>
 <textarea id="violationComment" placeholder="Комментарий"></textarea>
 <input id="violationTime" type="time">
-<input id="specialist" placeholder="ФИО специалиста">
+<input id="specialist" placeholder="Специалист">
 
 <select id="status">
 <option>В работе</option>
@@ -88,11 +88,12 @@ let cache = {};
 
 function login(){
   const name = document.getElementById("username").value.trim();
+
   if(!name){
-    alert("Введите имя");{
+    alert("Введите имя");
     return;
   }
-}
+
   currentUser = name;
   localStorage.setItem("user", name);
 
@@ -103,6 +104,7 @@ function login(){
 
 window.onload = () => {
   const u = localStorage.getItem("user");
+
   if(u){
     currentUser = u;
     document.getElementById("user").textContent = u;
@@ -119,16 +121,17 @@ window.onload = () => {
 function addTicket(){
 
   if(!currentUser){
-    alert("Сначала войдите");{
+    alert("Сначала войдите");
     return;
   }
-}
+
   const ticket = document.getElementById("ticket").value.trim();
+
   if(!ticket){
-    alert("Введите номер тикета");{
+    alert("Введите тикет");
     return;
   }
-}
+
   ref.push({
     date: document.getElementById("date").value || "",
     ticket: ticket,
