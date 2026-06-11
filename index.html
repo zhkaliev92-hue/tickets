@@ -12,7 +12,6 @@
 body{font-family:Arial;background:#eef7ff;margin:0}
 
 .container{max-width:1200px;margin:auto;padding:20px;display:none}
-#loginBox{height:100vh;display:flex;justify-content:center;align-items:center}
 
 .card{background:#fff;padding:20px;border-radius:10px;box-shadow:0 2px 10px rgba(0,0,0,.1);margin-bottom:20px}
 
@@ -30,13 +29,11 @@ th{background:#1fa2ff;color:#fff}
 
 <body>
 
-<!-- APP -->
 <div class="container" id="app">
 
 <h2>📋 ЦОО тикетов</h2>
 
 <div class="card">
-<p>Пользователь: <b id="user"></b></p>
 
 <input id="date" type="date">
 <input id="ticket" placeholder="Тикет">
@@ -62,7 +59,7 @@ th{background:#1fa2ff;color:#fff}
 <tr>
 <th>Дата</th><th>Тикет</th><th>ID</th><th>Нарушение</th>
 <th>Комментарий</th><th>Время</th><th>Специалист</th>
-<th>Кто добавил</th><th>Статус</th><th>Удалить</th>
+<th>Статус</th><th>Удалить</th>
 </tr>
 </thead>
 <tbody id="list"></tbody>
@@ -81,21 +78,21 @@ const firebaseConfig = {
   messagingSenderId: "XXXX",
   appId: "XXXX"
 };
+
 firebase.initializeApp(firebaseConfig);
 const ref = firebase.database().ref("tickets");
 
-let currentUser = "Оператор ЦОО";
 let cache = {};
 
 // ---------- INIT ----------
-window.onload = () => {
+document.addEventListener("DOMContentLoaded", () => {
   document.getElementById("app").style.display = "block";
 
   ref.on("value", snap => {
     cache = snap.val() || {};
     render();
   });
-};
+});
 
 // ---------- ADD ----------
 function addTicket(){
@@ -115,7 +112,6 @@ function addTicket(){
     violationTime: document.getElementById("violationTime")?.value || "",
     specialist: document.getElementById("specialist")?.value || "",
     status: document.getElementById("status")?.value || "В работе",
-    createdBy: currentUser,
     createdAt: Date.now()
   });
 
@@ -150,32 +146,25 @@ function render(){
   let html = "";
 
   for(const [id,t] of rows){
-  if(JSON.stringify(t).toLowerCase().includes(q)){
-    html += `
+    if(JSON.stringify(t).toLowerCase().includes(q)){
+      html += `
       <tr>
         <td>${t.date||""}</td>
         <td>${t.ticket||""}</td>
-
-        <td>
-          <a target="_blank"
-          href="https://qbox.telecom.kz/apps/#/support/analytics/calls/text/history?call_id=${t.idnumber}">
-          ${t.idnumber||""}
-          </a>
-        </td>
-
+        <td>${t.idnumber||""}</td>
         <td>${t.violation||""}</td>
         <td>${t.violationComment||""}</td>
         <td>${t.violationTime||""}</td>
         <td>${t.specialist||""}</td>
-        <td>${t.createdBy||""}</td>
         <td>${t.status||""}</td>
         <td><button onclick="deleteTicket('${id}')">X</button></td>
       </tr>`;
+    }
   }
-}
 
-list.innerHTML = html;
+  list.innerHTML = html;
 }
-// firebase.initializeApp(firebaseConfig);
-// const ref = firebase.database().ref("tickets")
-  document.body.innerHTML = "<h1>TEST OK</h1>";
+</script>
+
+</body>
+</html>
