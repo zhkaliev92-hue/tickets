@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ЦОО тикетов</title>
+
+<link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
+<link rel="manifest" href="site.webmanifest">
+
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+
+<style>
+body{font-family:Segoe UI,Arial;background:#eef7ff;margin:0}
+.container{max-width:1200px;margin:auto;padding:20px;display:none}
+#loginBox{height:100vh;display:flex;justify-content:center;align-items:center}
+.card{background:#fff;padding:20px;border-radius:12px;box-shadow:0 2px 10px rgba(0,0,0,.15);margin-bottom:20px}
+input,textarea,select,button{width:100%;box-sizing:border-box;padding:10px;margin-top:10px}
+button{cursor:pointer;background:#1fa2ff;color:#fff;border:none;border-radius:8px}
+table{width:100%;border-collapse:collapse}
+th,td{border:1px solid #ddd;padding:8px}
+th{background:#1fa2ff;color:#fff}
+</style>
+</head>
+<body>
+
+<div id="loginBox">
+<div class="card" style="max-width:320px;width:100%">
+<h3>🔐 Вход</h3>
+<input id="username" placeholder="Введите имя">
+<button onclick="login()">Войти</button>
+</div>
+</div>
+
+<div class="container" id="app">
+<h2>📋 ЦОО тикетов</h2>
+<div class="card">
+<p>👤 Пользователь: <b id="user"></b></p>
+
+<input id="date" type="date">
+<input id="ticket" placeholder="Номер тикета">
+<input id="idnumber" placeholder="ID номер">
+<textarea id="violation" placeholder="Нарушение"></textarea>
+<textarea id="violationComment" placeholder="Комментарий"></textarea>
+<input id="violationTime" type="time">
+<input id="specialist" placeholder="ФИО специалиста">
+
+<select id="status">
+<option>В работе</option>
+<option>Выполнен</option>
+</select>
+
+<button onclick="addTicket()">Добавить</button>
+</div>
+
+<div class="card">
+<input id="search" placeholder="Поиск" oninput="render()">
+<table>
+<thead>
+<tr>
+<th>Дата</th><th>Тикет</th><th>ID</th><th>Нарушение</th><th>Комментарий</th>
+<th>Время</th><th>Специалист</th><th>Кто добавил</th><th>Статус</th><th>Удалить</th>
+</tr>
+</thead>
+<tbody id="list"></tbody>
+</table>
+</div>
+</div>
+
+<script>
+const firebaseConfig={
+ apiKey:"PASTE_HERE",
+ authDomain:"PASTE_HERE",
+ databaseURL:"https://coo-tickets-default-rtdb.asia-southeast1.firebasedatabase.app/",
+ projectId:"coo-tickets"
+};
+
+firebase.initializeApp(firebaseConfig);
+const ref=firebase.database().ref("tickets");
+
+let currentUser="";
+let cache={};
+
+function login(){
+ currentUser=document.getElementById("username").value.trim();
+ if(!currentUser){alert("Введите имя");return;}
+ localStorage.setItem("user",currentUser);
+ document.getElementById("user").textContent=currentUser;
+ document.getElementById("loginBox").style.display="none";
+ document.getElementById("app").style.display="block";
+}
+
+window.onload=()=>{
+ const u=localStorage.getItem("user");
+ if(u){
+   currentUser=u;
+   document.getElementById("user").textContent=u;
+   document.getElementById("loginBox").style.display="none";
+   document.getElementById("app").style.display="block";
+ }
+ ref.on("value",snap=>{
+   cache=snap.val()||{};
+   render();
+ });
+};
+
+function addTicket(){
+ if(!currentUser){alert("Сначала войдите");return;}
+ if(!document.getElementById("ticket").value.trim()){
+   alert("Введите номер тикета");
+   return;
+ }
+ ref.push({
+   date:date.value,
+   ticket:ticket.value,
+   idnumber:idnumber.value,
+   violation:violation.value,
+   violationComment:violationComment.value,
+   violationTime:violationTime.value,
+   specialist:specialist.value,
+   status:status.value,
+   createdBy:currentUser,
+   createdAt:Date.now()
+ }).then(()=>{
+   ticket.value="";
+   idnumber.value="";
+   violation.value="";
+   violationComment.value="";
+   violationTime.value="";
+   specialist.value="";
+   alert("Тикет добавлен");
+ }).catch(e=>alert(e.message));
+}
+
+function deleteTicket(id){
+ if(confirm("Удалить запись?")){
+   ref.child(id).remove();
+ }
+}
+
+function render(){
+ const q=(document.getElementById("search").value||"").toLowerCase();
+ const rows=Object.entries(cache).sort((a,b)=>(b[1].createdAt||0)-(a[1].createdAt||0));
+ let html="";
+ for(const [id,t] of rows){
+   if(JSON.stringify(t).toLowerCase().includes(q)){
+     html+=`<tr>
+<td>${t.date||""}</td>
+<td><a target="_blank" href="https://qbox.telecom.kz/apps/#/support/analytics/calls/text/history?call_id=${t.idnumber||""}">${t.ticket||""}</a></td>
+<td>${t.idnumber||""}</td>
+<td>${t.violation||""}</td>
+<td>${t.violationComment||""}</td>
+<td>${t.violationTime||""}</td>
+<td>${t.specialist||""}</td>
+<td>${t.createdBy||""}</td>
+<td>${t.status||""}</td>
+<td><button onclick="deleteTicket('${id}')">X</button></td>
+</tr>`;
+   }
+ }
+ document.getElementById("list").innerHTML=html;
+}
+</script>
+</body>
+</html>
