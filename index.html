@@ -176,6 +176,7 @@ const ref = db.ref("tickets");
 let currentUser = "";
 
 function login(){
+
     currentUser = document.getElementById("username").value;
 
     if(!currentUser){
@@ -191,7 +192,14 @@ function login(){
     document.getElementById("user").innerText = currentUser;
 
     render();
+
+}   // ← вот этой скобки у тебя не хватает
+
 function addTicket(){
+
+    // код addTicket
+
+}
 
     if(!document.getElementById("ticket").value){
         alert("Введите номер тикета");
