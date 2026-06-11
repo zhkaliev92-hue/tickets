@@ -191,21 +191,38 @@ function login(){
     document.getElementById("user").innerText = currentUser;
 
     render();
-}
-
 function addTicket(){
 
-ref.push({
-date: document.getElementById("date").value,
-ticket: document.getElementById("ticket").value,
-idnumber: document.getElementById("idnumber").value,
-violation: document.getElementById("violation").value,
-violationComment: document.getElementById("violationComment").value,
-violationTime: document.getElementById("violationTime").value,
-specialist: document.getElementById("specialist").value,
-status: document.getElementById("status").value,
-createdBy: currentUser
-});
+    if(!document.getElementById("ticket").value){
+        alert("Введите номер тикета");
+        return;
+    }
+
+    ref.push({
+        date: document.getElementById("date").value,
+        ticket: document.getElementById("ticket").value,
+        idnumber: document.getElementById("idnumber").value,
+        violation: document.getElementById("violation").value,
+        violationComment: document.getElementById("violationComment").value,
+        violationTime: document.getElementById("violationTime").value,
+        specialist: document.getElementById("specialist").value,
+        status: document.getElementById("status").value,
+        createdBy: currentUser
+    }).then(()=>{
+
+        alert("Тикет успешно добавлен");
+
+        document.getElementById("ticket").value="";
+        document.getElementById("idnumber").value="";
+        document.getElementById("violation").value="";
+        document.getElementById("violationComment").value="";
+        document.getElementById("violationTime").value="";
+        document.getElementById("specialist").value="";
+
+    }).catch(err=>{
+        alert(err.message);
+        console.log(err);
+    });
 
 }
 
@@ -217,7 +234,11 @@ function render(){
 
 ref.on("value", snap=>{
 let data = snap.val();
-let html = "";
+if(!data){
+    document.getElementById("list").innerHTML="";
+    return;
+}
+    let html = "";
 
 for(let id in data){
 
