@@ -94,7 +94,7 @@ const ref = firebase.database().ref("tickets");
 let currentUser = "";
 let cache = {};
 
-// 🔐 LOGIN
+// ---------- LOGIN ----------
 function login(){
   const name = document.getElementById("username").value.trim();
 
@@ -106,11 +106,11 @@ function login(){
   currentUser = name;
   localStorage.setItem("user", name);
 
-  showApp(name);
+  safeShowApp(name);
 }
 
-// 🔓 SHOW APP SAFE
-function showApp(name){
+// ---------- SAFE UI ----------
+function safeShowApp(name){
   const userEl = document.getElementById("user");
   const loginBox = document.getElementById("loginBox");
   const app = document.getElementById("app");
@@ -120,24 +120,23 @@ function showApp(name){
   if(app) app.style.display = "block";
 }
 
-// 🚀 INIT AFTER LOAD
+// ---------- INIT ----------
 window.onload = () => {
 
   const u = localStorage.getItem("user");
 
   if(u){
     currentUser = u;
-    showApp(u);
+    safeShowApp(u);
   }
 
-  // Firebase safe load
   ref.on("value", snap => {
     cache = snap.val() || {};
     render();
   });
 };
 
-// ➕ ADD
+// ---------- ADD ----------
 function addTicket(){
 
   if(!currentUser){
@@ -166,7 +165,6 @@ function addTicket(){
 
   alert("Тикет добавлен");
 
-  // clear
   ticketEl.value = "";
   document.getElementById("idnumber").value = "";
   document.getElementById("violation").value = "";
@@ -175,14 +173,14 @@ function addTicket(){
   document.getElementById("specialist").value = "";
 }
 
-// ❌ DELETE
+// ---------- DELETE ----------
 function deleteTicket(id){
   if(confirm("Удалить?")){
     ref.child(id).remove();
   }
 }
 
-// 📋 RENDER SAFE
+// ---------- RENDER ----------
 function render(){
 
   const list = document.getElementById("list");
@@ -191,25 +189,25 @@ function render(){
   const q = (document.getElementById("search")?.value || "").toLowerCase();
 
   const rows = Object.entries(cache)
-    .sort((a,b)=> (b[1].createdAt||0)-(a[1].createdAt||0));
+    .sort((a,b)=>(b[1].createdAt||0)-(a[1].createdAt||0));
 
   let html = "";
 
   for(const [id,t] of rows){
     if(JSON.stringify(t).toLowerCase().includes(q)){
       html += `
-      <tr>
-        <td>${t.date||""}</td>
-        <td>${t.ticket||""}</td>
-        <td>${t.idnumber||""}</td>
-        <td>${t.violation||""}</td>
-        <td>${t.violationComment||""}</td>
-        <td>${t.violationTime||""}</td>
-        <td>${t.specialist||""}</td>
-        <td>${t.createdBy||""}</td>
-        <td>${t.status||""}</td>
-        <td><button onclick="deleteTicket('${id}')">X</button></td>
-      </tr>`;
+        <tr>
+          <td>${t.date||""}</td>
+          <td>${t.ticket||""}</td>
+          <td>${t.idnumber||""}</td>
+          <td>${t.violation||""}</td>
+          <td>${t.violationComment||""}</td>
+          <td>${t.violationTime||""}</td>
+          <td>${t.specialist||""}</td>
+          <td>${t.createdBy||""}</td>
+          <td>${t.status||""}</td>
+          <td><button onclick="deleteTicket('${id}')">X</button></td>
+        </tr>`;
     }
   }
 
