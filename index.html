@@ -67,7 +67,7 @@ th{background:#1fa2ff;color:#fff}
 </div>
 
 <script>
-// 🔥 ВСТАВЬ СВОЙ Firebase config СЮДА
+/* 🔥 1. Firebase CONFIG (ЗАМЕНИ НА СВОЙ) */
 const firebaseConfig = {
   apiKey: "XXXX",
   authDomain: "XXXX.firebaseapp.com",
@@ -78,21 +78,21 @@ const firebaseConfig = {
   appId: "XXXX"
 };
 
-// ИНИЦИАЛИЗАЦИЯ (ТОЛЬКО ОДИН РАЗ!)
+/* 🔥 2. INIT (ТОЛЬКО ОДИН РАЗ) */
 firebase.initializeApp(firebaseConfig);
-
 const ref = firebase.database().ref("tickets");
 
 let cache = {};
 
-// LOAD
+/* 🔥 3. LOAD DATA */
 ref.on("value", snap => {
   cache = snap.val() || {};
   render();
 });
 
-// ADD
+/* 🔥 4. ADD TICKET */
 function addTicket(){
+
   const ticket = document.getElementById("ticket").value.trim();
 
   if(!ticket){
@@ -122,19 +122,20 @@ function addTicket(){
   document.getElementById("specialist").value = "";
 }
 
-// DELETE
+/* 🔥 5. DELETE */
 function deleteTicket(id){
   ref.child(id).remove();
 }
 
-// RENDER
+/* 🔥 6. RENDER */
 function render(){
+
   const list = document.getElementById("list");
   const q = (document.getElementById("search").value || "").toLowerCase();
 
   let html = "";
 
-  Object.entries(cache || {})
+  Object.entries(cache)
     .sort((a,b)=> (b[1].createdAt||0)-(a[1].createdAt||0))
     .forEach(([id,t])=>{
 
