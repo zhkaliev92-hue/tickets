@@ -96,6 +96,20 @@ let cache = {};
 
 // ---------- LOGIN ----------
 function login(){
+  alert("Кнопка работает");
+
+  const name = document.getElementById("username").value.trim();
+
+  if(!name){
+    alert("Введите имя");
+    return;
+  }
+
+  currentUser = name;
+  localStorage.setItem("user", name);
+
+  safeShowApp(name);
+}
   const name = document.getElementById("username").value.trim();
 
   if(!name){
