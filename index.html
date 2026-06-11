@@ -84,13 +84,18 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const ref = firebase.database().ref("tickets");
 
-let currentUser = "";
-let cache = {};
 let currentUser = "Оператор ЦОО";
+let cache = {};
+
+// ---------- INIT ----------
+window.onload = () => {
+  document.getElementById("app").style.display = "block";
+
   ref.on("value", snap => {
     cache = snap.val() || {};
     render();
   });
+};
 
 // ---------- ADD ----------
 function addTicket(){
