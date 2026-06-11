@@ -87,42 +87,6 @@ const ref = firebase.database().ref("tickets");
 let currentUser = "";
 let cache = {};
 
-// ---------- LOGIN ----------
-window.login = function(){
-  const name = document.getElementById("username").value.trim();
-
-  if(!name){
-    alert("Введите имя");
-    return;
-  }
-
-  currentUser = name;
-  localStorage.setItem("user", name);
-
-  safeShowApp(name);
-}
-
-// ---------- SAFE UI ----------
-function safeShowApp(name){
-  const userEl = document.getElementById("user");
-  const loginBox = document.getElementById("loginBox");
-  const app = document.getElementById("app");
-
-  if(userEl) userEl.textContent = name;
-  if(loginBox) loginBox.style.display = "none";
-  if(app) app.style.display = "block";
-}
-
-// ---------- INIT ----------
-window.onload = () => {
-
-  const u = localStorage.getItem("user");
-
-  if(u){
-    currentUser = u;
-    safeShowApp(u);
-  }
-
   ref.on("value", snap => {
     cache = snap.val() || {};
     render();
