@@ -124,15 +124,23 @@ function addTicket(){
    status:status.value,
    createdBy:currentUser,
    createdAt:Date.now()
- }).then(()=>{
-   ticket.value="";
-   idnumber.value="";
-   violation.value="";
-   violationComment.value="";
-   violationTime.value="";
-   specialist.value="";
-   alert("Тикет добавлен");
- }).catch(e=>alert(e.message));
+ .then(() => {
+
+    alert("Тикет успешно добавлен");
+
+    document.getElementById("date").value = "";
+    document.getElementById("ticket").value = "";
+    document.getElementById("idnumber").value = "";
+    document.getElementById("violation").value = "";
+    document.getElementById("violationComment").value = "";
+    document.getElementById("violationTime").value = "";
+    document.getElementById("specialist").value = "";
+    document.getElementById("status").selectedIndex = 0;
+
+})
+.catch(err => {
+    alert(err.message);
+});
 }
 
 function deleteTicket(id){
