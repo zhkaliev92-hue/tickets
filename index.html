@@ -176,11 +176,3 @@ function render(){
 
 list.innerHTML = html;
 }
-window.onload = () => {
-  document.getElementById("app").style.display = "block";
-
-  ref.on("value", snap => {
-    cache = snap.val() || {};
-    render();
-  });
-};
