@@ -157,6 +157,19 @@ function render(){
   list.innerHTML = html;
 }
 </script>
+<script>
+const firebaseConfig = {
+  apiKey: "AIzaSyA77J6t_gO7xK10BWd2gd9yNe8imGmfvLY",
+  authDomain: "coo-22aee.firebaseapp.com",
+  databaseURL: "https://coo-22aee-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "coo-22aee",
+  storageBucket: "coo-22aee.firebasestorage.app",
+  messagingSenderId: "744781707352",
+  appId: "1:744781707352:web:3ebb37e74b93c8ed64f22d"
+};
 
+firebase.initializeApp(firebaseConfig);
+const ref = firebase.database().ref("tickets");
+</script>
 </body>
 </html>
