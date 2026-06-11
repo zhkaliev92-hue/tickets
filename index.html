@@ -68,6 +68,14 @@ th{background:#1fa2ff;color:#fff}
 
 <script>
 /* 🔥 1. Firebase CONFIG (ЗАМЕНИ НА СВОЙ) */
+// Import the functions you need from the SDKs you need
+import { initializeApp } from "firebase/app";
+import { getAnalytics } from "firebase/analytics";
+// TODO: Add SDKs for Firebase products that you want to use
+// https://firebase.google.com/docs/web/setup#available-libraries
+
+// Your web app's Firebase configuration
+// For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
   apiKey: "AIzaSyA77J6t_gO7xK10BWd2gd9yNe8imGmfvLY",
   authDomain: "coo-22aee.firebaseapp.com",
@@ -78,6 +86,10 @@ const firebaseConfig = {
   appId: "1:744781707352:web:3ebb37e74b93c8ed64f22d",
   measurementId: "G-S68X2NTZ49"
 };
+
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+const analytics = getAnalytics(app);
 
 /* 🔥 2. INIT (ТОЛЬКО ОДИН РАЗ) */
 firebase.initializeApp(firebaseConfig);
