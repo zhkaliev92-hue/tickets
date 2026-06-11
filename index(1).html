@@ -120,18 +120,18 @@ function addTicket(){
 
     ref.push({
 
-        date: document.getElementById("date").value,
-        ticket: document.getElementById("ticket").value,
-        idnumber: document.getElementById("idnumber").value,
-        violation: document.getElementById("violation").value,
-        violationComment: document.getElementById("violationComment").value,
-        violationTime: document.getElementById("violationTime").value,
-        specialist: document.getElementById("specialist").value,
-        status: document.getElementById("status").value,
-        createdBy: currentUser,
-        createdAt: Date.now()
+    date: document.getElementById("date").value || "",
+    ticket: document.getElementById("ticket").value || "",
+    idnumber: document.getElementById("idnumber").value || "",
+    violation: document.getElementById("violation").value || "",
+    violationComment: document.getElementById("violationComment").value || "",
+    violationTime: document.getElementById("violationTime").value || "",
+    specialist: document.getElementById("specialist").value || "",
+    status: document.getElementById("status")?.value || "В работе",
+    createdBy: currentUser,
+    createdAt: Date.now()
 
-    })
+})
     .then(() => {
 
         alert("Тикет успешно добавлен");
