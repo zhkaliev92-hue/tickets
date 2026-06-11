@@ -194,28 +194,33 @@ function render(){
   let html = "";
 
   for(const [id,t] of rows){
-    if(JSON.stringify(t).toLowerCase().includes(q)){
-      html += `
-        <tr>
-  <td>${t.date||""}</td>
-  <td>${t.ticket||""}</td>
+  if(JSON.stringify(t).toLowerCase().includes(q)){
+    html += `
+      <tr>
+        <td>${t.date||""}</td>
+        <td>${t.ticket||""}</td>
 
-  <td>
-    <a target="_blank"
-    href="https://qbox.telecom.kz/apps/#/support/analytics/calls/text/history?call_id=${t.idnumber}">
-    ${t.idnumber||""}
-    </a>
-  </td>
+        <td>
+          <a target="_blank"
+          href="https://qbox.telecom.kz/apps/#/support/analytics/calls/text/history?call_id=${t.idnumber}">
+          ${t.idnumber||""}
+          </a>
+        </td>
 
-  <td>${t.violation||""}</td>
-  <td>${t.violationComment||""}</td>
-  <td>${t.violationTime||""}</td>
-  <td>${t.specialist||""}</td>
-  <td>${t.createdBy||""}</td>
-  <td>${t.status||""}</td>
-  <td><button onclick="deleteTicket('${id}')">X</button></td>
-</tr>
-
-  list.innerHTML = html;
+        <td>${t.violation||""}</td>
+        <td>${t.violationComment||""}</td>
+        <td>${t.violationTime||""}</td>
+        <td>${t.specialist||""}</td>
+        <td>${t.createdBy||""}</td>
+        <td>${t.status||""}</td>
+        <td><button onclick="deleteTicket('${id}')">X</button></td>
+      </tr>`;
+  }
 }
+
+list.innerHTML = html;
+}
+
 </script>
+</body>
+</html> 
