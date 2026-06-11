@@ -200,7 +200,12 @@ function render(){
           <td>${t.date||""}</td>
           <td>${t.ticket||""}</td>
           <td>${t.idnumber||""}</td>
-          <td>${t.violation||""}</td>
+          <td>
+<a target="_blank"
+href="https://qbox.telecom.kz/api/analytics/history/${t.idnumber}">
+${t.idnumber}
+</a>
+</td>
           <td>${t.violationComment||""}</td>
           <td>${t.violationTime||""}</td>
           <td>${t.specialist||""}</td>
