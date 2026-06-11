@@ -105,8 +105,13 @@ window.onload=()=>{
 };
 
 function addTicket(){
-  alert("КНОПКА РАБОТАЕТ");
-}
+
+    alert("КНОПКА РАБОТАЕТ");
+
+    if(!currentUser){
+        alert("Сначала войдите");
+        return;
+    }
 
     if(!document.getElementById("ticket").value.trim()){
         alert("Введите номер тикета");
@@ -142,12 +147,9 @@ function addTicket(){
 
     })
     .catch(err => {
-
         alert(err.message);
         console.log(err);
-
     });
-
 }
 
 function deleteTicket(id){
