@@ -68,119 +68,123 @@ th{background:#1fa2ff;color:#fff}
 </div>
 
 <script>
-const firebaseConfig={
- apiKey:"PASTE_HERE",
- authDomain:"PASTE_HERE",
- databaseURL:"https://coo-tickets-default-rtdb.asia-southeast1.firebasedatabase.app/",
- projectId:"coo-tickets"
+const firebaseConfig = {
+  apiKey: "YOUR_API_KEY",
+  authDomain: "YOUR_PROJECT.firebaseapp.com",
+  databaseURL: "https://coo-tickets-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "coo-tickets"
 };
 
 firebase.initializeApp(firebaseConfig);
-const ref=firebase.database().ref("tickets");
+const ref = firebase.database().ref("tickets");
 
-let currentUser="";
-let cache={};
+let currentUser = "";
+let cache = {};
+
+// ===== UI CONTROL =====
+function showApp(name){
+  currentUser = name;
+  document.getElementById("user").textContent = name;
+
+  document.getElementById("loginBox").style.display = "none";
+  document.getElementById("app").style.display = "block";
+}
 
 function login(){
- currentUser=document.getElementById("username").value.trim();
- if(!currentUser){alert("Введите имя");return;}
- localStorage.setItem("user",currentUser);
- document.getElementById("user").textContent=currentUser;
- document.getElementById("loginBox").style.display="none";
- document.getElementById("app").style.display="block";
+  const name = document.getElementById("username").value.trim();
+
+  if(!name){
+    alert("Введите имя");
+    return;
+  }
+
+  localStorage.setItem("user", name);
+  showApp(name);
 }
 
-window.onload=()=>{
- const u=localStorage.getItem("user");
- if(u){
-   currentUser=u;
-   document.getElementById("user").textContent=u;
-   document.getElementById("loginBox").style.display="none";
-   document.getElementById("app").style.display="block";
- }
- ref.on("value",snap=>{
-   cache=snap.val()||{};
-   render();
- });
+window.onload = () => {
+  const u = localStorage.getItem("user");
+
+  if(u){
+    showApp(u);
+  } else {
+    document.getElementById("loginBox").style.display = "flex";
+    document.getElementById("app").style.display = "none";
+  }
+
+  ref.on("value", snap => {
+    cache = snap.val() || {};
+    render();
+  });
 };
 
+// ===== ADD =====
 function addTicket(){
+  if(!currentUser){
+    alert("Сначала войдите");
+    return;
+  }
 
-    if(!currentUser){
-        alert("Сначала войдите");
-        return;
-    }
+  const ticket = document.getElementById("ticket").value.trim();
+  if(!ticket){
+    alert("Введите номер тикета");
+    return;
+  }
 
-    if(!document.getElementById("ticket").value.trim()){
-        alert("Введите номер тикета");
-        return;
-    }
+  ref.push({
+    date: document.getElementById("date").value || "",
+    ticket,
+    idnumber: document.getElementById("idnumber").value || "",
+    violation: document.getElementById("violation").value || "",
+    violationComment: document.getElementById("violationComment").value || "",
+    violationTime: document.getElementById("violationTime").value || "",
+    specialist: document.getElementById("specialist").value || "",
+    status: document.getElementById("status").value || "В работе",
+    createdBy: currentUser,
+    createdAt: Date.now()
+  });
 
-    ref.push({
+  alert("Тикет добавлен");
 
-        date: document.getElementById("date").value,
-        ticket: document.getElementById("ticket").value,
-        idnumber: document.getElementById("idnumber").value,
-        violation: document.getElementById("violation").value,
-        violationComment: document.getElementById("violationComment").value,
-        violationTime: document.getElementById("violationTime").value,
-        specialist: document.getElementById("specialist").value,
-        status: document.getElementById("status").value,
-        createdBy: currentUser,
-        createdAt: Date.now()
+  document.getElementById("ticket").value = "";
+};
 
-    })
-    .then(() => {
-
-        alert("Тикет успешно добавлен");
-
-        document.getElementById("date").value = "";
-        document.getElementById("ticket").value = "";
-        document.getElementById("idnumber").value = "";
-        document.getElementById("violation").value = "";
-        document.getElementById("violationComment").value = "";
-        document.getElementById("violationTime").value = "";
-        document.getElementById("specialist").value = "";
-        document.getElementById("status").selectedIndex = 0;
-
-    })
-    .catch(err => {
-
-        alert(err.message);
-        console.log(err);
-
-    });
-
-}
-
+// ===== DELETE =====
 function deleteTicket(id){
- if(confirm("Удалить запись?")){
-   ref.child(id).remove();
- }
+  if(confirm("Удалить?")){
+    ref.child(id).remove();
+  }
 }
 
+// ===== RENDER =====
 function render(){
- const q=(document.getElementById("search").value||"").toLowerCase();
- const rows=Object.entries(cache).sort((a,b)=>(b[1].createdAt||0)-(a[1].createdAt||0));
- let html="";
- for(const [id,t] of rows){
-   if(JSON.stringify(t).toLowerCase().includes(q)){
-     html+=`<tr>
-<td>${t.date||""}</td>
-<td><a target="_blank" href="https://qbox.telecom.kz/apps/#/support/analytics/calls/text/history?call_id=${t.idnumber||""}">${t.ticket||""}</a></td>
-<td>${t.idnumber||""}</td>
-<td>${t.violation||""}</td>
-<td>${t.violationComment||""}</td>
-<td>${t.violationTime||""}</td>
-<td>${t.specialist||""}</td>
-<td>${t.createdBy||""}</td>
-<td>${t.status||""}</td>
-<td><button onclick="deleteTicket('${id}')">X</button></td>
-</tr>`;
-   }
- }
- document.getElementById("list").innerHTML=html;
+  const q = (document.getElementById("search").value || "").toLowerCase();
+
+  const rows = Object.entries(cache)
+    .sort((a,b)=>(b[1].createdAt||0)-(a[1].createdAt||0));
+
+  let html = "";
+
+  for(const [id,t] of rows){
+    if(JSON.stringify(t).toLowerCase().includes(q)){
+      html += `
+        <tr>
+          <td>${t.date||""}</td>
+          <td>${t.ticket||""}</td>
+          <td>${t.idnumber||""}</td>
+          <td>${t.violation||""}</td>
+          <td>${t.violationComment||""}</td>
+          <td>${t.violationTime||""}</td>
+          <td>${t.specialist||""}</td>
+          <td>${t.createdBy||""}</td>
+          <td>${t.status||""}</td>
+          <td><button onclick="deleteTicket('${id}')">X</button></td>
+        </tr>
+      `;
+    }
+  }
+
+  document.getElementById("list").innerHTML = html;
 }
 </script>
-</body>
 </html>
