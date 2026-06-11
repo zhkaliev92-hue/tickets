@@ -67,13 +67,25 @@ th{background:#1fa2ff;color:#fff}
 </div>
 
 <script>
+// 🔥 ВСТАВЬ СВОЙ Firebase config СЮДА
+const firebaseConfig = {
+  apiKey: "XXXX",
+  authDomain: "XXXX.firebaseapp.com",
+  databaseURL: "https://XXXX-default-rtdb.firebaseio.com",
+  projectId: "XXXX",
+  storageBucket: "XXXX.appspot.com",
+  messagingSenderId: "XXXX",
+  appId: "XXXX"
+};
 
+// ИНИЦИАЛИЗАЦИЯ (ТОЛЬКО ОДИН РАЗ!)
 firebase.initializeApp(firebaseConfig);
+
 const ref = firebase.database().ref("tickets");
 
 let cache = {};
 
-// LOAD DATA
+// LOAD
 ref.on("value", snap => {
   cache = snap.val() || {};
   render();
@@ -81,7 +93,7 @@ ref.on("value", snap => {
 
 // ADD
 function addTicket(){
-  const ticket = document.getElementById("ticket").value;
+  const ticket = document.getElementById("ticket").value.trim();
 
   if(!ticket){
     alert("Введите тикет");
@@ -122,7 +134,7 @@ function render(){
 
   let html = "";
 
-  Object.entries(cache)
+  Object.entries(cache || {})
     .sort((a,b)=> (b[1].createdAt||0)-(a[1].createdAt||0))
     .forEach(([id,t])=>{
 
@@ -147,19 +159,6 @@ function render(){
   list.innerHTML = html;
 }
 </script>
-<script>
-const firebaseConfig = {
-  apiKey: "AIzaSyA77J6t_gO7xK10BWd2gd9yNe8imGmfvLY",
-  authDomain: "coo-22aee.firebaseapp.com",
-  databaseURL: "https://coo-22aee-default-rtdb.asia-southeast1.firebasedatabase.app",
-  projectId: "coo-22aee",
-  storageBucket: "coo-22aee.firebasestorage.app",
-  messagingSenderId: "744781707352",
-  appId: "1:744781707352:web:3ebb37e74b93c8ed64f22d"
-};
 
-firebase.initializeApp(firebaseConfig);
-const ref = firebase.database().ref("tickets");
-</script>
 </body>
 </html>
