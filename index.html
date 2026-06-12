@@ -46,12 +46,15 @@ a{
 <h2> Тикеты</h2>
 
 <div class="card">
-<input id="date" type="date">
-<input id="ticket" placeholder="Мобильный номер">
-<input id="idnumber" placeholder="ID">
-<textarea id="violation" placeholder="Нарушение"></textarea>
-<textarea id="violationComment" placeholder="Комментарий"></textarea>
-<input id="violationTime" type="time">
+.row{
+  display:flex;
+  gap:10px;
+}
+
+.row input{
+  width:50%;
+  margin-top:8px;
+}
 <input id="specialist" placeholder="ФИО специалиста">
 
 <button onclick="addTicket()">Добавить</button>
