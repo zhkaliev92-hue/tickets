@@ -113,13 +113,6 @@ function addTicket(){
     createdAt: Date.now()
   });
 
-  if(callId){
-    window.open(
-  `https://qbox.telecom.kz/apps/#/support/analytics/calls/text/history?call_id=${callId}`,
-  "_blank"
-    );
-  }
-
   alert("Добавлено");
 
   document.getElementById("ticket").value = "";
@@ -147,17 +140,28 @@ function render(){
     .forEach(([id,t])=>{
 
       if(JSON.stringify(t).toLowerCase().includes(q)){
+
         html += `
           <tr>
-            <td>${t.date||""}</td>
-            <td>${t.ticket||""}</td>
-            <td>${t.idnumber||""}</td>
-            <td>${t.violation||""}</td>
-            <td>${t.violationComment||""}</td>
-            <td>${t.violationTime||""}</td>
-            <td>${t.specialist||""}</td>
-            <td>${t.status||""}</td>
-            <td><button onclick="deleteTicket('${id}')">X</button></td>
+            <td>${t.date || ""}</td>
+            <td>${t.ticket || ""}</td>
+
+            <td>
+              <a href="https://qbox.telecom.kz/apps/#/support/analytics/calls/text/history?call_id=${t.idnumber}"
+                 target="_blank">
+                ${t.idnumber || ""}
+              </a>
+            </td>
+
+            <td>${t.violation || ""}</td>
+            <td>${t.violationComment || ""}</td>
+            <td>${t.violationTime || ""}</td>
+            <td>${t.specialist || ""}</td>
+            <td>${t.status || ""}</td>
+
+            <td>
+              <button onclick="deleteTicket('${id}')">X</button>
+            </td>
           </tr>
         `;
       }
