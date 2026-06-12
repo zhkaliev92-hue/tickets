@@ -22,6 +22,20 @@ a{
   text-decoration:underline;
   font-weight:bold;
 }
+  delete-btn{
+  background:red;
+  color:white;
+  border:none;
+  padding:6px 10px;
+  border-radius:6px;
+  cursor:pointer;
+  width:auto;
+  font-size:16px;
+}
+
+.delete-btn:hover{
+  background:darkred;
+}
 </style>
 </head>
 
@@ -165,7 +179,7 @@ function render(){
 </td>
 
             <td>
-              <button onclick="deleteTicket('${id}')">X</button>
+              <button onclick="deleteTicket('${id}')">🗑</button>
             </td>
           </tr>
         `;
