@@ -109,7 +109,7 @@ function addTicket(){
     violationComment: document.getElementById("violationComment").value,
     violationTime: document.getElementById("violationTime").value,
     specialist: document.getElementById("specialist").value,
-    status: document.getElementById("status").value,
+    status: "В работе",
     createdAt: Date.now()
   });
 
@@ -157,7 +157,12 @@ function render(){
             <td>${t.violationComment || ""}</td>
             <td>${t.violationTime || ""}</td>
             <td>${t.specialist || ""}</td>
-            <td>${t.status || ""}</td>
+            <td>
+  <select onchange="changeStatus('${id}', this.value)">
+    <option ${t.status === "В работе" ? "selected" : ""}>В работе</option>
+    <option ${t.status === "Выполнен" ? "selected" : ""}>Выполнен</option>
+  </select>
+</td>
 
             <td>
               <button onclick="deleteTicket('${id}')">X</button>
