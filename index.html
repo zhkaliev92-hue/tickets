@@ -91,33 +91,20 @@ ref.on("value", snap => {
 });
 
 /* 🔥 4. ADD TICKET */
-function addTicket() {
+function addTicket(){
 
   const ticket = document.getElementById("ticket").value.trim();
   const callId = document.getElementById("idnumber").value.trim();
 
-  if (!ticket) {
+  if(!ticket){
     alert("Введите тикет");
     return;
   }
 
-  // код сохранения тикета
-
-  if (callId) {
-    window.open(
-      https://qbox.telecom.kz/apps/#/support/analytics/calls/text/history?call_id=${callId},
-      "_blank"
-    );
-  }
-}
-
-  const url = `https://qbox.telecom.kz/api/analytics/history/${id}`;
-  window.open(url, "_blank");
-}
   ref.push({
     date: document.getElementById("date").value,
     ticket: ticket,
-    idnumber: document.getElementById("idnumber").value,
+    idnumber: callId,
     violation: document.getElementById("violation").value,
     violationComment: document.getElementById("violationComment").value,
     violationTime: document.getElementById("violationTime").value,
@@ -125,6 +112,13 @@ function addTicket() {
     status: document.getElementById("status").value,
     createdAt: Date.now()
   });
+
+  if(callId){
+    window.open(
+      https://qbox.telecom.kz/apps/#/support/analytics/calls/text/history?call_id=${callId},
+      "_blank"
+    );
+  }
 
   alert("Добавлено");
 
@@ -135,7 +129,6 @@ function addTicket() {
   document.getElementById("violationTime").value = "";
   document.getElementById("specialist").value = "";
 }
-
 /* 🔥 5. DELETE */
 function deleteTicket(id){
   ref.child(id).remove();
