@@ -99,7 +99,17 @@ function addTicket(){
     alert("Введите тикет");
     return;
   }
+function goToQbox() {
+  const id = document.getElementById("idnumber").value;
 
+  if (!id) {
+    alert("Введите ID");
+    return;
+  }
+
+  const url = `https://qbox.telecom.kz/api/analytics/history/${id}`;
+  window.open(url, "_blank");
+}
   ref.push({
     date: document.getElementById("date").value,
     ticket: ticket,
