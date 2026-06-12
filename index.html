@@ -91,21 +91,25 @@ ref.on("value", snap => {
 });
 
 /* 🔥 4. ADD TICKET */
-function addTicket(){
+function addTicket() {
 
   const ticket = document.getElementById("ticket").value.trim();
+  const callId = document.getElementById("idnumber").value.trim();
 
-  if(!ticket){
+  if (!ticket) {
     alert("Введите тикет");
     return;
   }
-function goToQbox() {
-  const id = document.getElementById("idnumber").value;
 
-  if (!id) {
-    alert("Введите ID");
-    return;
+  // код сохранения тикета
+
+  if (callId) {
+    window.open(
+      https://qbox.telecom.kz/apps/#/support/analytics/calls/text/history?call_id=${callId},
+      "_blank"
+    );
   }
+}
 
   const url = `https://qbox.telecom.kz/api/analytics/history/${id}`;
   window.open(url, "_blank");
