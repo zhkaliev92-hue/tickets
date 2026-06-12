@@ -36,6 +36,15 @@ a{
 .delete-btn:hover{
   background:darkred !important;
 }
+  .row{
+  display:flex;
+  gap:10px;
+}
+
+.row input{
+  width:50%;
+  margin-top:8px;
+}
 </style>
 </head>
 
@@ -46,15 +55,10 @@ a{
 <h2> Тикеты</h2>
 
 <div class="card">
-.row{
-  display:flex;
-  gap:10px;
-}
-
-.row input{
-  width:50%;
-  margin-top:8px;
-}
+<div class="row">
+  <input id="date" type="date">
+  <input id="violationTime" type="time">
+</div>
 <input id="specialist" placeholder="ФИО специалиста">
 
 <button onclick="addTicket()">Добавить</button>
