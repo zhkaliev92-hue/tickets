@@ -123,6 +123,7 @@ font-size:18px;
 <table>
 <thead>
 <tr>
+<th>Канал</th>
 <th>Дата</th>
 <th>Мобильный номер</th>
 <th>ID</th>
@@ -241,9 +242,10 @@ if(t.status==="Выполнен"){
       if(JSON.stringify(t).toLowerCase().includes(q)){
 
         html += `
-          <tr>
-            <td>${t.date || ""}</td>
-            <td>${t.ticket || ""}</td>
+  <tr>
+    <td><b>${t.channel || "ЦОО"}</b></td>
+    <td>${t.date || ""}</td>
+    <td>${t.ticket || ""}</td>
 
             <td>
               <a href="https://qbox.telecom.kz/apps/#/support/analytics/calls/text/history?call_id=${t.idnumber}"
