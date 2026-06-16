@@ -45,6 +45,28 @@ a{
   width:50%;
   margin-top:8px;
 }
+  .channel-bar{
+    display:flex;
+    gap:10px;
+    flex-wrap:wrap;
+    margin:15px 0;
+}
+
+.channel-btn{
+    width:auto;
+    padding:10px 18px;
+    border:none;
+    border-radius:8px;
+    background:#e5e5e5;
+    color:#000;
+    cursor:pointer;
+    font-weight:bold;
+}
+
+.channel-btn.active{
+    background:#1fa2ff;
+    color:#fff;
+}
 </style>
 </head>
 
@@ -53,7 +75,19 @@ a{
 <div class="container">
 
 <h2> Тикеты</h2>
+<div class="channel-bar">
 
+<button type="button" class="channel-btn active" onclick="selectChannel(this,'ЦОО')">ЦОО</button>
+
+<button type="button" class="channel-btn" onclick="selectChannel(this,'ПСС')">ПСС</button>
+
+<button type="button" class="channel-btn" onclick="selectChannel(this,'160')">160</button>
+
+<button type="button" class="channel-btn" onclick="selectChannel(this,'165')">165</button>
+
+<button type="button" class="channel-btn" onclick="selectChannel(this,'СОВО')">СОВО</button>
+
+</div>
 <div class="card">
 
 <div class="row">
@@ -123,6 +157,18 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const ref = firebase.database().ref("tickets");
 let cache = {};
+  let selectedChannel = "ЦОО";
+
+function selectChannel(btn, channel){
+
+    selectedChannel = channel;
+
+    document
+        .querySelectorAll(".channel-btn")
+        .forEach(b => b.classList.remove("active"));
+
+    btn.classList.add("active");
+}
 
 /* 🔥 3. LOAD DATA */
 ref.on("value", snap => {
