@@ -80,6 +80,15 @@ a{
 </div>
 
 <div class="card">
+
+<div id="stats" style="
+font-weight:bold;
+margin-bottom:10px;
+font-size:18px;
+">
+Всего: 0 | В работе: 0 | Выполнено: 0
+</div>
+
 <input id="search" placeholder="Поиск" oninput="render()">
 
 <table>
@@ -170,10 +179,22 @@ function render(){
   const q = (document.getElementById("search").value || "").toLowerCase();
 
   let html = "";
+  let total = 0;
+let work = 0;
+let done = 0;
 
   Object.entries(cache)
     .sort((a,b)=> (b[1].createdAt||0)-(a[1].createdAt||0))
     .forEach(([id,t])=>{
+      total++;
+
+if(t.status==="В работе"){
+  work++;
+}
+
+if(t.status==="Выполнен"){
+  done++;
+}
 
       if(JSON.stringify(t).toLowerCase().includes(q)){
 
@@ -212,6 +233,8 @@ function render(){
     });
 
   list.innerHTML = html;
+  document.getElementById("stats").innerHTML =
+`Всего: ${total} | В работе: ${work} | Выполнено: ${done}`;
 }
 </script>
 
