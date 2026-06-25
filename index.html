@@ -109,6 +109,23 @@ a{
 #loginPage h2{
   text-align:center;
 }
+  .logout-btn{
+  width:auto;
+  background:none;
+  border:none;
+  color:#ff5a5a;
+  font-size:18px;
+  font-weight:600;
+  cursor:pointer;
+  padding:8px 12px;
+  display:flex;
+  align-items:center;
+  gap:8px;
+}
+
+.logout-btn:hover{
+  opacity:0.8;
+}
 </style>
 </head>
 
@@ -146,14 +163,8 @@ margin-bottom:15px;
 
 <h2 style="margin:0;">📋 Тикеты</h2>
 
-<button onclick="logout()" style="
-width:auto;
-background:#ff4d4d;
-padding:10px 15px;
-border-radius:8px;
-font-weight:bold;
-">
-🔓 Выход
+<button onclick="logout()" class="logout-btn">
+  <span>↪</span> Выход
 </button>
 
 </div>
