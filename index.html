@@ -113,7 +113,15 @@ a{
 </head>
 
 <body>
-  <div id="loginPage">
+  <div id="loading" style="
+text-align:center;
+margin-top:100px;
+font-size:20px;
+font-weight:bold;
+">
+Загрузка...
+</div>
+  <div id="loginPage" style="display:none;">
 
 <h2>🔐 Вход в систему тикетов</h2>
 
@@ -129,7 +137,15 @@ a{
 
 <div class="container">
 
-<h2> Тикеты</h2>
+<h2>Тикеты</h2>
+
+<button onclick="logout()" style="
+width:auto;
+background:#ff4d4d;
+margin-bottom:15px;
+">
+Выйти
+</button>
 <div class="channel-bar">
 
 <button type="button" class="channel-btn active" onclick="selectChannel(this,'ЦОО')">ЦОО</button>
@@ -207,13 +223,20 @@ const firebaseConfig = {
   messagingSenderId: "94031170350",
   appId: "1:94031170350:web:1a18dc569f50e3f0f6c8bf",
   measurementId: "G-XC5RVRSE2X"
+  
 };
 
 
 /* 🔥 2. INIT (ТОЛЬКО ОДИН РАЗ) */
 firebase.initializeApp(firebaseConfig);
-  const auth = firebase.auth();
-  function login(){
+
+const auth = firebase.auth();
+
+function logout(){
+  auth.signOut();
+}
+
+function login(){
 
   const email =
     document.getElementById("email").value;
@@ -230,15 +253,17 @@ const ref = firebase.database().ref("tickets");
 let cache = {};
   auth.onAuthStateChanged(user => {
 
+  document.getElementById("loading").style.display = "none";
+
   if(user){
 
-    document.getElementById("loginPage").style.display = "none";
     document.getElementById("app").style.display = "block";
+    document.getElementById("loginPage").style.display = "none";
 
-  }else{
+  } else {
 
-    document.getElementById("loginPage").style.display = "block";
     document.getElementById("app").style.display = "none";
+    document.getElementById("loginPage").style.display = "block";
 
   }
 
