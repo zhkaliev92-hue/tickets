@@ -137,15 +137,26 @@ font-weight:bold;
 
 <div class="container">
 
-<h2>Тикеты</h2>
+<div style="
+display:flex;
+justify-content:space-between;
+align-items:center;
+margin-bottom:15px;
+">
+
+<h2 style="margin:0;">📋 Тикеты</h2>
 
 <button onclick="logout()" style="
 width:auto;
 background:#ff4d4d;
-margin-bottom:15px;
+padding:10px 15px;
+border-radius:8px;
 ">
-Выйти
+🚪 Выйти
 </button>
+
+</div>
+
 <div class="channel-bar">
 
 <button type="button" class="channel-btn active" onclick="selectChannel(this,'ЦОО')">ЦОО</button>
@@ -231,9 +242,15 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 
 const auth = firebase.auth();
+  auth.setPersistence(firebase.auth.Auth.Persistence.SESSION);
 
 function logout(){
-  auth.signOut();
+
+  auth.signOut()
+    .then(()=>{
+      location.reload();
+    });
+
 }
 
 function login(){
