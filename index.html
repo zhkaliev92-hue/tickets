@@ -67,6 +67,36 @@ a{
     background:#1fa2ff;
     color:#fff;
 }
+  @media (max-width: 768px){
+
+  table{
+    display:none;
+  }
+
+  #mobileList{
+    display:block;
+  }
+
+  .ticket-card{
+    background:#fff;
+    border-radius:10px;
+    padding:12px;
+    margin-bottom:10px;
+    box-shadow:0 1px 4px rgba(0,0,0,.1);
+  }
+
+  .ticket-card div{
+    margin:4px 0;
+  }
+}
+
+@media (min-width: 769px){
+
+  #mobileList{
+    display:none;
+  }
+
+}
 </style>
 </head>
 
@@ -137,6 +167,7 @@ font-size:18px;
 </thead>
 <tbody id="list"></tbody>
 </table>
+  <div id="mobileList"></div>
 </div>
 
 </div>
@@ -222,6 +253,7 @@ function render(){
   const q = (document.getElementById("search").value || "").toLowerCase();
 
   let html = "";
+  let mobileHtml = "";
   let total = 0;
 let work = 0;
 let done = 0;
@@ -272,12 +304,44 @@ if(t.status==="Выполнен"){
 </td>
           </tr>
         `;
+        mobileHtml += `
+<div class="ticket-card">
+
+<div><b>Канал:</b> ${t.channel || "ЦОО"}</div>
+
+<div><b>Дата:</b> ${t.date || ""}</div>
+
+<div><b>Время:</b> ${t.violationTime || ""}</div>
+
+<div><b>Номер:</b> ${t.ticket || ""}</div>
+
+<div>
+<b>ID:</b>
+<a href="https://qbox.telecom.kz/apps/#/support/analytics/calls/text/history?call_id=${t.idnumber}"
+target="_blank">
+${t.idnumber || ""}
+</a>
+</div>
+
+<div><b>Нарушение:</b> ${t.violation || ""}</div>
+
+<div><b>Комментарий:</b> ${t.violationComment || ""}</div>
+
+<div><b>Специалист:</b> ${t.specialist || ""}</div>
+
+<div><b>Статус:</b> ${t.status || ""}</div>
+
+</div>
+`;
       }
 
     });
 
   list.innerHTML = html;
-  document.getElementById("stats").innerHTML =
+
+document.getElementById("mobileList").innerHTML = mobileHtml;
+
+document.getElementById("stats").innerHTML =
 `Всего: ${total} | В работе: ${work} | Выполнено: ${done}`;
 }
 </script>
