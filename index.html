@@ -301,7 +301,12 @@ function deleteTicket(id){
 }
 
 /* 🔥 6. RENDER */
-function render(){
+function changeStatus(id, status){
+  ref.child(id).update({
+    status: status
+  });
+}
+  function render(){
 
   const list = document.getElementById("list");
   const q = (document.getElementById("search").value || "").toLowerCase();
@@ -399,6 +404,9 @@ document.getElementById("stats").innerHTML =
 `Всего: ${total} | В работе: ${work} | Выполнено: ${done}`;
 }
 </script>
-</div>
+
+</div> <!-- container -->
+</div> <!-- app -->
+
 </body>
 </html>
