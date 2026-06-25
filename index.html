@@ -7,7 +7,7 @@
 
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
-
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
 <style>
 body{font-family:Arial;background:#eef7ff;margin:0}
 .container{max-width:1000px;margin:auto;padding:20px}
@@ -187,8 +187,25 @@ const firebaseConfig = {
 
 /* 🔥 2. INIT (ТОЛЬКО ОДИН РАЗ) */
 firebase.initializeApp(firebaseConfig);
+  const auth = firebase.auth();
 const ref = firebase.database().ref("tickets");
 let cache = {};
+  auth.onAuthStateChanged(user => {
+
+  if(!user){
+
+    const email = prompt("Введите логин");
+    const password = prompt("Введите пароль");
+
+    auth.signInWithEmailAndPassword(email, password)
+      .catch(err => {
+        alert("Ошибка входа: " + err.message);
+        location.reload();
+      });
+
+  }
+
+});
   let selectedChannel = "ЦОО";
 
 function selectChannel(btn, channel){
